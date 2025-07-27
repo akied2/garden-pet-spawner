@@ -1,0 +1,36 @@
+-- Pet Spawner for Grow a Garden (KRNL-compatible)
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+local hrp = char:WaitForChild("HumanoidRootPart")
+
+-- Pet names list sourced from the Grow a Garden wiki and aggregator sources :contentReference[oaicite:4]{index=4}
+local petNames = {
+    "Dog","Golden Lab","Bunny","Bee","Starfish","Crab","Seagull",
+    "Grey Mouse","Brown Mouse","Squirrel","Deer","Spotted Deer","Pig",
+    "Monkey","Silver Monkey","Cow","Sea Otter","Turtle","Polar Bear",
+    "Queen Bee","Bear Bee","Dragonfly","Butterfly","Tarantula Hawk","Wasp",
+    "Moth","Giant Ant","Praying Mantis","Snail","Pack Bee","Honey Bee",
+    "Raccoon","Night Owl","Moon Cat","Kitsune","Raccoon","Disco Bee",
+    "T‑Rex","Spinosaurus","Blood Hedgehog","Kappa" -- abbreviated, add more as needed
+}
+
+for _, name in ipairs(petNames) do
+    local petTemplate = ReplicatedStorage:FindFirstChild(name)
+    if petTemplate and petTemplate:IsA("Model") then
+        local clone = petTemplate:Clone()
+        clone.Name = player.Name.."_"..name
+        clone.Parent = Workspace
+        local pos = hrp.Position + Vector3.new(math.random(-5,5), 0, math.random(-5,5))
+        if clone.PrimaryPart then
+            clone:SetPrimaryPartCFrame(CFrame.new(pos))
+        else
+            clone:MoveTo(pos)
+        end
+        print("✅ Spawned pet:", name)
+    else
+        warn("❌ Not found or inaccessible:", name)
+    end
+end
